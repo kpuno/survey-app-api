@@ -4,10 +4,15 @@ let mongoose = require('mongoose');
 
 let User = require('../../models/user');
 
+let userController = require('../../controllers/user');
+
+let surveyController = require('../../controllers/survey');
+
+let authController = require('../../controllers/authentication');
+
 router.get('/', function (req, res, next) {
     res.end("surveyApp API");
 });
-
 
 /**###################
  *       USER
@@ -36,11 +41,30 @@ router.get('/user', (req, res, next) => {
     }
 });
 
+/** 
+ * POST /api/user
+ */
+router.post('/user/signup', authController.signup);
 
 
 
-
-
+/**
+ * GET /api/user/surveys
+ * Fetches logged in user's created surveys.
+ * Returns =>
+ * Success: {surveys}
+ * Failure: {"err": "errormsg"}
+ */
+router.get('/user/surveys', (req, res, next) => {
+    surveyController.getAll(req.user._id, (err, surveys) => {
+        if (err || !surveys) {
+            let msg = "Error fetching surveys";
+            return res.json({ err: msg });
+        } else {
+            return res.json(surveys);
+        }
+    });
+});
 
 
 
