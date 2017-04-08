@@ -1,28 +1,85 @@
 // Main starting point of application
-const express = require('express');
-const http = require('http');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const app = express();
-const router = require('./router');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const favicon = require('serve-favicon');
+var app = require('./server/app');
+var debug = require('debug')('Survey App');
+var http = require('http');
 
-// DB Setup
-mongoose.connect(process.env.URI || 'mongodb://user:12345@ds153730.mlab.com:53730/survey-app');
 
-// favicon
-app.use(favicon(__dirname + '/favicon.ico'));
+/**
+ * Get port from environment and store in Express.
+ */
+var port = normalizePort(process.env.PORT || '3090');
+app.set('port', port);
 
-// App Setup
-app.use(morgan('combined'));
-app.use(cors());
-app.use(bodyParser.json({ type: '*/*' }));
-router(app);
+/**
+ * Create HTTP server.
+ */
 
-// Server Setup
-const port = process.env.PORT || 3090;
-const server = http.createServer(app);
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
 server.listen(port);
-console.log('Server listening on: ', port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

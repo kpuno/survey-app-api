@@ -25,10 +25,11 @@ const userSchema = new Schema({
 		unique: true,
 		lowercase: true
 	},
-	surveys: [Schema.Types.ObjectId],
-	collection: 'users'
-
-});
+	surveys: [Schema.Types.ObjectId]
+},
+	{
+		collection: 'users'
+	});
 
 // On Save Hook, encrypt password
 // Before saving a model, run this function
