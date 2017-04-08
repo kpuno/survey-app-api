@@ -11,6 +11,10 @@ let surveySchema = Schema({
         trim: true,
         required: 'Survey name is required.'
     },
+    created: {
+        type: Date,
+        default: Date.now
+    },
     owner: {
         type: Schema.Types.ObjectId,
         required: 'Owner ID must be specified.'
